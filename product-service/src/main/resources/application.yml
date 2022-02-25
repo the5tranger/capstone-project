@@ -1,0 +1,45 @@
+server:
+  port: 8080
+
+logging:
+  level:
+    ex.microservices: debug
+
+spring:
+  application:
+    name: product-service
+
+  cloud:
+    config:
+      uri: http://localhost:8888
+  zipkin:
+    baseUrl: http://localhost:9411/
+  devtools:
+    livereload:
+      enabled: false
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      productService:
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10
+        slidingWindowType: COUNT_BASED
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: health
